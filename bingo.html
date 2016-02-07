@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="css/bingo.css" type="text/css">
+<script src="jquery-1.12.0.js" type="text/javascript"></script>
+<script>
+var contador=0;
+$(document).ready(function(){
+//Aqui tu codigo
+generador();
+
+comprobador();
+bombo=[];
+	for(i=1;i<=90;i++)
+	{
+		bombo.push(i);
+	}
+
+reloj=setInterval(bolas,100);
+
+$("td").click(marcado);
+		
+
+});
+
+function marcado()
+{
+	if (!isNaN($(this).html()))
+	{	
+		if( $(this).attr("class") == "rojo")
+		{
+		  $(this).attr("class","normal");
+		  document.getElementById("aciertos").innerHTML=--contador;
+		}
+		else
+		{
+		  $(this).attr("class","rojo");
+			document.getElementById("aciertos").innerHTML=++contador;		  
+		}
+	}
+}
+
+
+
+function bolas()
+{
+	
+	var pos_bola = aleatorio(0, bombo.length-1);
+	bola=bombo[pos_bola];
+	
+	bombo.splice(pos_bola,1);
+	document.getElementById("bolas").innerHTML=bola;
+	t=$("#comprobador td");
+	$(t).eq(bola-1).css("background-color", "yellow");
+	if(bombo.length==0)
+	{
+		clearInterval(reloj);
+	}
+	
+	
+}
+
+function aleatorio(inferior,superior){
+    numPosibilidades = superior - inferior
+    aleat = Math.random() * numPosibilidades
+    aleat = Math.round(aleat)
+    return parseInt(inferior) + aleat
+}
+
+//Comprobador que devuelve false si se completa una columna solo con espacios
+function columnaDeEspacios(fila,col)
+{
+  if(fila==2)
+  {
+    if(filas[0][col]==0 && filas[1][col]==0) return true;
+    else return false;
+  }
+  else return false;
+}
+function comprobador(x)
+{	
+	var fragment = document.createDocumentFragment();
+	
+	for (f=0; f<9;f++)
+	{
+		var tr = document.createElement("tr");
+		
+		for (c=1;c<=10;c++)
+		{
+			var td = document.createElement("td");				
+			numero=10*f+c;
+			td.innerHTML=numero;
+			
+			tr.appendChild(td);
+		}
+		fragment.appendChild(tr);		
+	}	
+	var table = $("#comprobador");
+	table.append(fragment);
+
+						
+	
+}
+
+function generador()
+{
+	// Array que contendrá 9 arrays con 3 números cada uno
+	columnas = [];
+	//Primer número posible de la primera columna
+	primerN = 1;
+	//Recorro las columnas, definiré las columnas
+	for (c=0;c<9;c++)
+	{
+		//Array que contendrá los números de la columna
+		columnas[c]=[];
+		//Ultimo número posible de la columna, total 10 números
+		ultimoN=primerN+9;
+		// Primera columna solo 9 numeros posibles
+		if (c==0) ultimoN--;
+		//Ultima columna son 11 números posibles
+		if (c==8) ultimoN++;
+		//Creo array con los números de la columna
+		decena = [];
+		for (i=primerN;i<=ultimoN;i++)
+		{
+		  decena.push(i);
+		}
+		  //Completo la columna con 3 números de la decena
+		for (f=1; f<=3; f++)
+		{
+		  nElem=decena.length;
+		  pos=aleatorio(0,nElem-1);
+		  num=decena[pos];
+		  columnas[c].push(num);
+		  //Elimino numero
+		  decena.splice(pos,1);
+		}
+		columnas[c].sort();
+		primerN=ultimoN+1;
+
+	}
+
+	//Array que contendrá las filas compuestas de números y espacios
+	filas = [];
+	for (f=0; f<3 ; f++)
+	{
+	  //Determino aleatoriamente las posiciones de los espacios para la filas
+	  espacios = [];
+
+	  while(espacios.length<4)
+	  {
+		num=aleatorio(0,8);
+
+		if (espacios.indexOf(num)==-1 && !columnaDeEspacios(f,num))
+		{
+		  espacios.push(num);
+		}
+	  }
+
+	  filas[f]=[];
+	  //Construyo las filas
+	  for (c=0; c<9; c++)
+	  {
+		if(espacios.indexOf(c)==-1)
+		{
+		  filas[f].push(columnas[c][f]);
+		  //Insertar aquí los numeros de cada carton de la partida
+		}
+		else
+		{
+		  filas[f].push(0);
+		}
+	  }
+	}
+
+
+
+	var xfilas=document.getElementsByTagName("tr");
+	for(i=0;i<3;i++)
+	  {
+		var xceldas=xfilas[i].getElementsByTagName("td");
+		for(j=0;j<9;j++)
+		{
+		  if(filas[i][j]==0) xceldas[j].innerHTML='<img src="imagenes/Alianza_Rebelde.png" width="40">';
+		  else xceldas[j].innerHTML=filas[i][j];
+		}
+	  }
+}
+
+</script>
+</head>
+<body>
+  
+  <table class="carton">
+    <tr>
+        <td class="normal"></td>
+        <td class="normal"></td>
+		<td class="normal"></td>
+		<td class="normal"></td>
+		<td class="normal"></td>
+		<td class="normal"></td>
+		<td class="normal"></td>
+		<td class="normal"></td>
+		<td class="normal"></td>
+    </tr>
+    <tr>
+        <td class="normal"></td>
+        <td class="normal"></td>
+		<td class="normal"></td>
+		<td class="normal"></td>
+		<td class="normal"></td>
+		<td class="normal"></td>
+		<td class="normal"></td>
+		<td class="normal"></td>
+		<td class="normal"></td>
+    </tr>
+    <tr>
+        <td class="normal"></td>
+        <td class="normal"></td>
+		<td class="normal"></td>
+		<td class="normal"></td>
+		<td class="normal"></td>
+		<td class="normal"></td>
+		<td class="normal"></td>
+		<td class="normal"></td>
+		<td class="normal"></td>
+    </tr>
+	
+	
+</table>
+
+	<div id="bolas" class="marcador">
+		</div>
+	<div id="aciertos" class="botonbingo">
+		</div>
+
+<table id="comprobador"></table>
+
+
+
+
+</body>
+</html>
